@@ -1,0 +1,151 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+version: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{ include "fluxsend.labels" . | nindent 6 }}
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      labels:
+        {{ include "fluxsend.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.appName }}
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: frontend
+          image: {{ .Values.images.frontend }}
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+          env:
+            - name: NGINX_BACKEND_HOST
+              value: localhost
+            - name: NGINX_BACKEND_PORT
+              value: 3001
+            - name: BACKEND_ENDPOINT
+              value: "https://fluxsend.win"
+          ports:
+            - name: frontend
+              containerPort: 8000
+        - name: backend
+          image: {{ .Values.images.backend }}
+          resources:
+            requests:
+              cpu: 128m
+              memory: 200Mi
+          env:
+            # static env
+            - name: FLUXSEND_LISTEN_PORT
+              value: "3001"
+            - name: FRONTEND_ENDPOINT
+              value: "https://fluxsend.win"
+            - name: BACKEND_ENDPOINT
+              value: "https://fluxsend.win"
+            # env from google credentials
+          {{- if .Values.secrets.storage.type "gcs" }}
+            - name: GCS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: GCS_BUCKET_NAME
+            - name: GOOGLE_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: GOOGLE_PROJECT_ID
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /config/gcs-credentials.json
+          {{- else if .Values.secrets.storage.type "s3" }}
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef: {{ .Values.secrets.storage.storageSecretName }}
+                key: AWS_REGION
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: AWS_SECRET_ACCESS_KEY
+          {{- end }}
+
+            - name: GOOGLE_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.oauthSecretName }}
+                  key: GOOGLE_COOKIE_SECRET
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.oauthSecretName }}
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.oauthSecretName }}
+                  key: GOOGLE_CLIENT_ID
+            # env from smtp credentials
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.smtpSecretName }}
+                  key: SMTP_HOST
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.smtpSecretName }}
+                  key: SMTP_PORT
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.smtpSecretName }}
+                  key: SMTP_USERNAME
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.smtpSecretName }}
+                  key: SMTP_PASSWORD
+            # env from existing postgres database
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.dbSecretName }}
+                  key: host
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.dbSecretName }}
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.dbSecretName }}
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.dbSecretName }}
+                  key: dbname
+          ports:
+            - name: backend
+              containerPort: 3001
+      {{- if .Values.secrets.storage.type "gcs" }}
+          volumeMounts:
+            - name: {{ .Values.secrets.storage.storageSecretName }}
+              mountPath: /config/gcs-credentials.json
+              subPath: gcs-credentials.json
+              readOnly: true
+      volumes:
+        - name: {{ .Values.secrets.storage.storageSecretName }}
+          secret:
+            secretName: {{ .Values.secrets.storage.storageSecretName }}
+      {{- end }}

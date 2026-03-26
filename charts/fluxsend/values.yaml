@@ -1,0 +1,38 @@
+images:
+  backend: fluxsend-backend:1.0.4
+  frontend: fluxsend-frontend:1.0.4
+
+namespace: "default"
+
+appName: "fluxsend"
+replicas: 1
+labels: {}
+# here specify:
+# podDisruptionBudget:
+#   minAvailable: <your_number>
+# or
+# podDisruptionBudget:
+#   maxUnavailable: <your_number>
+podDisruptionBudget:
+  maxUnavailable: {}
+  minAvailable: {}
+
+ingress:
+  ingressClassName: haproxy
+  annotations: {}
+  tls:
+    secretName: "__CHANGE_ME__"
+  hosts:
+    - hostname: "__CHANGE_ME__"
+      serviceName: "__CHANGE_ME__"
+      servicePort: "__CHANGE_ME__"
+
+secrets:
+  storage:
+    # s3 or gcs
+    type: "s3"
+    storageSecretName: "__CHANGE_ME__"
+
+  dbSecretName: "__CHANGE_ME__"
+  smtpSecretName: "__CHANGE_ME__"
+  oauthSecretName: "__CHANGE_ME__"
