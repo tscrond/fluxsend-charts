@@ -1,14 +1,15 @@
-{{- if .Values.podDisruptionBudget }}
+{{- $pdb := .Values.podDisruptionBudget }}
+{{- if or $pdb.minAvailable $pdb.maxUnavailable }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ .Values.appName }}-pdb
 spec:
-  {{- if .Values.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
-  {{- else if .Values.podDisruptionBudget.maxUnavailable }}
-  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
+  {{- if $pdb.minAvailable }}
+  minAvailable: {{ $pdb.minAvailable }}
+  {{- else if $pdb.maxUnavailable }}
+  maxUnavailable: {{ $pdb.maxUnavailable }}
   {{- end }}
   selector:
     matchLabels:

@@ -14,8 +14,8 @@ labels: {}
 # podDisruptionBudget:
 #   maxUnavailable: <your_number>
 podDisruptionBudget:
-  maxUnavailable: {}
-  minAvailable: {}
+  maxUnavailable: null
+  minAvailable: null
 
 ingress:
   ingressClassName: haproxy

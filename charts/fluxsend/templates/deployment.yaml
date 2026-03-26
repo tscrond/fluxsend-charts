@@ -27,7 +27,7 @@ spec:
             - name: NGINX_BACKEND_HOST
               value: localhost
             - name: NGINX_BACKEND_PORT
-              value: 3001
+              value: "3001"
             - name: BACKEND_ENDPOINT
               value: "https://fluxsend.win"
           ports:
@@ -77,6 +77,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.storage.storageSecretName }}
                   key: AWS_SECRET_ACCESS_KEY
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: S3_BUCKET_NAME
           {{- end }}
 
             - name: GOOGLE_COOKIE_SECRET
