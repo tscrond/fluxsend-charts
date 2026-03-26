@@ -1,5 +1,5 @@
 # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
-version: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.appName }}
@@ -48,7 +48,7 @@ spec:
             - name: BACKEND_ENDPOINT
               value: "https://fluxsend.win"
             # env from google credentials
-          {{- if .Values.secrets.storage.type "gcs" }}
+          {{- if eq .Values.secrets.storage.type "gcs" }}
             - name: GCS_BUCKET_NAME
               valueFrom:
                 secretKeyRef:
@@ -61,11 +61,12 @@ spec:
                   key: GOOGLE_PROJECT_ID
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /config/gcs-credentials.json
-          {{- else if .Values.secrets.storage.type "s3" }}
+          {{- else if eq .Values.secrets.storage.type "s3" }}
             - name: AWS_REGION
               valueFrom:
-                secretKeyRef: {{ .Values.secrets.storage.storageSecretName }}
-                key: AWS_REGION
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: AWS_REGION
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -138,7 +139,7 @@ spec:
           ports:
             - name: backend
               containerPort: 3001
-      {{- if .Values.secrets.storage.type "gcs" }}
+      {{- if eq .Values.secrets.storage.type "gcs" }}
           volumeMounts:
             - name: {{ .Values.secrets.storage.storageSecretName }}
               mountPath: /config/gcs-credentials.json
