@@ -19,6 +19,7 @@ spec:
       containers:
         - name: frontend
           image: {{ .Values.images.frontend }}
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 50m
@@ -35,6 +36,7 @@ spec:
               containerPort: 8000
         - name: backend
           image: {{ .Values.images.backend }}
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 128m
@@ -47,6 +49,8 @@ spec:
               value: "https://fluxsend.win"
             - name: BACKEND_ENDPOINT
               value: "https://fluxsend.win"
+            - name: MAIL_FROM
+              value: {{ .Values.mailFrom | quote }}
             # env from google credentials
           {{- if eq .Values.secrets.storage.type "gcs" }}
             - name: GCS_BUCKET_NAME
@@ -83,7 +87,6 @@ spec:
                   name: {{ .Values.secrets.storage.storageSecretName }}
                   key: S3_BUCKET_NAME
           {{- end }}
-
             - name: GOOGLE_COOKIE_SECRET
               valueFrom:
                 secretKeyRef:

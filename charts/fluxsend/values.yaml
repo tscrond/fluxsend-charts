@@ -6,6 +6,7 @@ namespace: "default"
 
 appName: "fluxsend"
 replicas: 1
+mailFrom: "noreply@fluxsend.com"
 labels: {}
 # here specify:
 # podDisruptionBudget:
@@ -24,7 +25,6 @@ ingress:
     secretName: "__CHANGE_ME__"
   hosts:
     - hostname: "__CHANGE_ME__"
-      serviceName: "__CHANGE_ME__"
       servicePort: "__CHANGE_ME__"
 
 secrets:
