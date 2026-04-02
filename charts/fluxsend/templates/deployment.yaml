@@ -51,6 +51,8 @@ spec:
               value: "https://fluxsend.win"
             - name: MAIL_FROM
               value: {{ .Values.mailFrom | quote }}
+            - name: ENABLE_CLOUDFRONT_DOWNLOADS
+              value: {{ ternary "true" "false" .Values.cloudFront.enabled | quote }}
             # env from google credentials
           {{- if eq .Values.secrets.storage.type "gcs" }}
             - name: GCS_BUCKET_NAME
@@ -86,6 +88,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.storage.storageSecretName }}
                   key: S3_BUCKET_NAME
+          {{- if .Values.cloudFront.enabled }}
+            - name: CLOUDFRONT_DOMAIN
+              value: {{ .Values.cloudFront.domain | quote }}
+            - name: CLOUDFRONT_KEY_PAIR_ID
+              value: {{ .Values.cloudFront.keyPairId | quote }}
+            - name: CLOUDFRONT_PRIVATE_KEY_PATH
+              value: /config/private_key.pem
+          {{- end }}
           {{- end }}
             - name: GOOGLE_COOKIE_SECRET
               valueFrom:
@@ -147,14 +157,32 @@ spec:
           ports:
             - name: backend
               containerPort: 3001
-      {{- if eq .Values.secrets.storage.type "gcs" }}
+
+          {{- if or (eq .Values.secrets.storage.type "gcs") .Values.cloudFront.enabled }}
           volumeMounts:
+          {{- if eq .Values.secrets.storage.type "gcs" }}
             - name: {{ .Values.secrets.storage.storageSecretName }}
               mountPath: /config/gcs-credentials.json
               subPath: gcs-credentials.json
               readOnly: true
+          {{- else if .Values.cloudFront.enabled }}
+            - name: {{ .Values.cloudFront.secretName }}
+              mountPath: /config/private_key.pem
+              subPath: private_key.pem
+              readOnly: true
+          {{- end }}
+          {{- end }}
+      {{- if or (eq .Values.secrets.storage.type "gcs") .Values.cloudFront.enabled }}
       volumes:
+      {{- if eq .Values.secrets.storage.type "gcs" }}
         - name: {{ .Values.secrets.storage.storageSecretName }}
           secret:
             secretName: {{ .Values.secrets.storage.storageSecretName }}
       {{- end }}
+      {{- if .Values.cloudFront.enabled }}
+        - name: {{ .Values.cloudFront.secretName }}
+          secret:
+            secretName: {{ .Values.cloudFront.secretName }}
+      {{- end }}
+      {{- end }}
+

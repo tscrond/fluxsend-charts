@@ -18,6 +18,12 @@ podDisruptionBudget:
   maxUnavailable: null
   minAvailable: null
 
+cloudFront:
+  enabled: false
+  domain: "__CHANGE_ME__"
+  keyPairId: "__CHANGE_ME__"
+  secretName: "__CHANGE_ME__"
+
 ingress:
   ingressClassName: haproxy
   annotations: {}
