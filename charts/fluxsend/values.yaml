@@ -20,18 +20,18 @@ podDisruptionBudget:
 
 cloudFront:
   enabled: false
-  domain: "__CHANGE_ME__"
-  keyPairId: "__CHANGE_ME__"
-  secretName: "__CHANGE_ME__"
+  domain: "changeme"
+  keyPairId: "changeme"
+  secretName: "changeme"
 
 ingress:
   ingressClassName: haproxy
   annotations: {}
   tls:
-    secretName: "__CHANGE_ME__"
+    secretName: "changeme"
   hosts:
-    - hostname: "__CHANGE_ME__"
-      servicePort: "__CHANGE_ME__"
+    - hostname: "changeme.changeme"
+      servicePort: "3000"
 
 params:
   frontendEndpoint: "__CHANGE_ME__"
@@ -41,8 +41,11 @@ secrets:
   storage:
     # s3 or gcs
     type: "s3"
-    storageSecretName: "__CHANGE_ME__"
+    storageSecretName: "changeme"
 
-  dbSecretName: "__CHANGE_ME__"
-  smtpSecretName: "__CHANGE_ME__"
-  oauthSecretName: "__CHANGE_ME__"
+  dbSecretName: "changeme"
+  smtpSecretName: "changeme"
+  oauthSecretName: "changeme"
+
+migrate:
+  legacyS3PrefixMigration: false
