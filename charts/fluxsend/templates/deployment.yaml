@@ -16,6 +16,37 @@ spec:
     spec:
       serviceAccountName: {{ .Values.appName }}
       terminationGracePeriodSeconds: 10
+      {{- if .Values.migrate.legacyS3PrefixMigration }}
+      initContainers:
+        - name: s3-migration
+          image: bobaklabs/s3-migrate
+          env:
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: AWS_REGION
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.storage.storageSecretName }}
+                  key: S3_BUCKET_NAME
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.dbSecretName }}
+                  key: uri
+      {{- end }}
       containers:
         - name: frontend
           image: {{ .Values.images.frontend }}
