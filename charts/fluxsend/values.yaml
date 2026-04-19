@@ -33,6 +33,10 @@ ingress:
     - hostname: "__CHANGE_ME__"
       servicePort: "__CHANGE_ME__"
 
+params:
+  frontendEndpoint: "__CHANGE_ME__"
+  backendEndpoint: "__CHANGE_ME__"
+
 secrets:
   storage:
     # s3 or gcs

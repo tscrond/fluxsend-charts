@@ -30,7 +30,7 @@ spec:
             - name: NGINX_BACKEND_PORT
               value: "3001"
             - name: BACKEND_ENDPOINT
-              value: "https://fluxsend.win"
+              value: {{ .Values.params.backendEndpoint }}
           ports:
             - name: frontend
               containerPort: 8000
@@ -46,9 +46,9 @@ spec:
             - name: FLUXSEND_LISTEN_PORT
               value: "3001"
             - name: FRONTEND_ENDPOINT
-              value: "https://fluxsend.win"
+              value: {{ .Values.params.frontendEndpoint }}
             - name: BACKEND_ENDPOINT
-              value: "https://fluxsend.win"
+              value: {{ .Values.params.backendEndpoint }}
             - name: MAIL_FROM
               value: {{ .Values.mailFrom | quote }}
             - name: ENABLE_CLOUDFRONT_DOWNLOADS
