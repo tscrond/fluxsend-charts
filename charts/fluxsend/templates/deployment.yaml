@@ -16,10 +16,15 @@ spec:
     spec:
       serviceAccountName: {{ .Values.appName }}
       terminationGracePeriodSeconds: 10
-      {{- if .Values.migrate.legacyS3PrefixMigration }}
+      {{- if .Values.migrate.enabled }}
       initContainers:
         - name: s3-migration
           image: bobaklabs/s3-migrate
+          {{- if .Values.migrate.legacyS3PrefixMigration}}
+          args: ["s3"]
+          {{- else if .Values.migrate.storageMappingMigration}}
+          args: ["storage-mapping", "s3"]
+          {{- end }}
           env:
             - name: AWS_REGION
               valueFrom:

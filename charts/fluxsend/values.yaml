@@ -48,4 +48,6 @@ secrets:
   oauthSecretName: "changeme"
 
 migrate:
+  enabled: false
   legacyS3PrefixMigration: false
+  storageMappingMigration: false
