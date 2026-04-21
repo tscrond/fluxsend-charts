@@ -21,9 +21,9 @@ spec:
         - name: s3-migration
           image: bobaklabs/s3-migrate
           {{- if .Values.migrate.legacyS3PrefixMigration}}
-          args: ["s3"]
+          args: ["/s3-migrate/s3-migrate","s3"]
           {{- else if .Values.migrate.storageMappingMigration}}
-          args: ["storage-mapping", "s3"]
+          args: ["/s3-migrate/s3-migrate","storage-mapping","s3"]
           {{- end }}
           env:
             - name: AWS_REGION

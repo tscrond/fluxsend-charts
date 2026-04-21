@@ -1,6 +1,6 @@
 images:
-  backend: fluxsend-backend:1.0.4
-  frontend: fluxsend-frontend:1.0.4
+  backend: bobaklabs/fluxsend-backend:latest
+  frontend: bobaklabs/fluxsend-frontend:latest
 
 namespace: "default"
 
