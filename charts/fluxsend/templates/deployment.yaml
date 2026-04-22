@@ -148,6 +148,21 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.oauthSecretName }}
                   key: GOOGLE_CLIENT_ID
+            - name: GITHUB_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.oauthSecretName }}
+                  key: GITHUB_OAUTH_CLIENT_ID
+            - name: GITHUB_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.oauthSecretName }}
+                  key: GITHUB_OAUTH_CLIENT_SECRET
+            - name: TOKEN_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.sessionEncryptionSecretName }}
+                  key: TOKEN_ENCRYPTION_KEY
             # env from smtp credentials
             - name: SMTP_HOST
               valueFrom:

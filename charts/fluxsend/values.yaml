@@ -46,6 +46,7 @@ secrets:
   dbSecretName: "changeme"
   smtpSecretName: "changeme"
   oauthSecretName: "changeme"
+  sessionEncryptionSecretName: "changeme"
 
 migrate:
   enabled: false
