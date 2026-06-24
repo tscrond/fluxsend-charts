@@ -78,7 +78,7 @@ spec:
             - name: BACKEND_ENDPOINT
               value: {{ .Values.params.backendEndpoint }}
             - name: NGINX_BACKEND_API_PORT
-              value: {{ .Values.params.fluxsendApiPort }}
+              value: {{ .Values.params.fluxsendApiPort | quote }}
           ports:
             - name: frontend
               containerPort: 8000
