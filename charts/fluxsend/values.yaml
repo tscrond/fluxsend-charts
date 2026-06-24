@@ -1,6 +1,7 @@
 images:
   backend: bobaklabs/fluxsend-backend:latest
   frontend: bobaklabs/fluxsend-frontend:latest
+  docs: bobaklabs/fluxsend-docs:latest
 
 namespace: "default"
 
@@ -32,10 +33,13 @@ ingress:
   hosts:
     - hostname: "changeme.changeme"
       servicePort: "3000"
+    - hostname: "docs.changeme.changeme"
+      servicePort: "4321"
 
 params:
   frontendEndpoint: "__CHANGE_ME__"
   backendEndpoint: "__CHANGE_ME__"
+  fluxsendApiPort: "__CHANGE_ME__"
 
 secrets:
   storage:
