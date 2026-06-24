@@ -17,3 +17,9 @@ spec:
     - name: frontend
       protocol: TCP
       port: 8000
+    - name: api
+      protocol: TCP
+      port: 8091
+    - name: docs
+      protocol: TCP
+      port: 80

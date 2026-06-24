@@ -53,6 +53,16 @@ spec:
                   key: uri
       {{- end }}
       containers:
+        - name: docs
+          image: {{ .Values.images.docs }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          ports:
+            - name: docs
+              containerPort: 80
         - name: frontend
           image: {{ .Values.images.frontend }}
           imagePullPolicy: Always
@@ -67,6 +77,8 @@ spec:
               value: "3001"
             - name: BACKEND_ENDPOINT
               value: {{ .Values.params.backendEndpoint }}
+            - name: NGINX_BACKEND_API_PORT
+              value: {{ .Values.params.fluxsendApiPort }}
           ports:
             - name: frontend
               containerPort: 8000
@@ -208,7 +220,8 @@ spec:
           ports:
             - name: backend
               containerPort: 3001
-
+            - name: api
+              containerPort: 8091
           {{- if or (eq .Values.secrets.storage.type "gcs") .Values.cloudFront.enabled }}
           volumeMounts:
           {{- if eq .Values.secrets.storage.type "gcs" }}
