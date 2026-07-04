@@ -136,6 +136,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.storage.storageSecretName }}
                   key: S3_BUCKET_NAME
+            - name: STORAGE_TYPE
+              value: "s3"
           {{- if .Values.cloudFront.enabled }}
             - name: CLOUDFRONT_DOMAIN
               value: {{ .Values.cloudFront.domain | quote }}
@@ -217,6 +219,9 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.dbSecretName }}
                   key: dbname
+            # log level
+            - name: APP_ENV
+              value: {{ .Values.params.logLevel }}
           ports:
             - name: backend
               containerPort: 3001
@@ -229,6 +234,8 @@ spec:
               mountPath: /config/gcs-credentials.json
               subPath: gcs-credentials.json
               readOnly: true
+            - name: STORAGE_TYPE
+              value: "gcs"
           {{- else if .Values.cloudFront.enabled }}
             - name: {{ .Values.cloudFront.secretName }}
               mountPath: /config/private_key.pem
